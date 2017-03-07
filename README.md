@@ -1,2 +1,3 @@
 # MLP
-C implementation of MLP
+ANSI C implementation of Muti-Layer-Perceptron
+
