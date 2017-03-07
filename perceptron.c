@@ -2,10 +2,11 @@
 #include<math.h>
 #include <stdlib.h>
 #include <time.h>
-float ***weights;
+float ***weights[];
 float **data;
 float LR;
 int Number_neurons[3]={13,-1,3};
+int currtime=0;
 srand((unsigned int)time(NULL));
 /*struct node
 {
@@ -33,14 +34,14 @@ void randomweights(int index,int layer)
 	
 	for(;i<Number_neurons[layer];i++)
 	{
-		weight[time][layer][index][i]=((float)rand()/(float)(RAND_MAX))*(sqrt(6/(Number_neurons[layer]+Number_neurons[layer-1])));
+		weight[currtime][layer][index][i]=((float)rand()/(float)(RAND_MAX))*(sqrt(6/(Number_neurons[layer]+Number_neurons[layer-1])));
 	}
 }
 float summation(int index,int layer)
 {
 	float sum=0.0;
 	for(i=0;i<Number_neurons[layer];i++)
-		sum+=weight[layer][index][i]=((float)rand()/(float)(RAND_MAX))*(sqrt(6/(Number_neurons[layer]+Number_neurons[layer-1])));
+		sum+=weight[currtime][layer][index][i]
 	return sum;	
 }
 void update_weight(int layer,int index)
