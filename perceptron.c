@@ -19,14 +19,29 @@ FILE *train,*test;
 float **prevhiddenweights;
 float **previnputweights;
 float ***weights;
-float *data;
+float **data;
 float *hiddendata;
-float LR;
+float **testdata;
 int Number_neurons[3]={13,-1,3};
 int currtime=0;
 float **errorhidden;
 float **errorinput;
 srand((unsigned int)time(NULL));
+void loaddata(char *a,char *b)
+{
+	train=fopen(a,"r");
+	int i=0;
+	while(fscanf(train,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",data[i][0],data[i][1],data[i][2],data[i][4],data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],data[i][11],data[i][13]))
+	{
+		i++;
+	}
+	test=fopen(b,"r");
+	i=0;
+	while(fscanf(test,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",testdata[i][0],testdata[i][1],testdata[i][2],testdata[i][4],testdata[i][5],testdata[i][6],testdata[i][7],testdata[i][8],testdata[i][9],testdata[i][10],testdata[i][11],testdata[i][13]))
+	{
+		i++;
+	}
+}
 void init(int n)
 {
 		Number_neurons[1]=n;
