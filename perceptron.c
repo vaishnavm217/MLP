@@ -6,6 +6,7 @@
 MULTILAYER PERCEPTRON!
 
 FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
+
 E`(wrt node k in hidden layer)=-(desired_output_k-current_output_k)*f`(sum_of_weights_with_hiddennode_values)
 
 FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
@@ -75,5 +76,5 @@ float randomweights()
 }
 void backpropogation()
 {
-	
 }
+
