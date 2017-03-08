@@ -2,11 +2,23 @@
 #include<math.h>
 #include <stdlib.h>
 #include <time.h>
+/*
+MULTILAYER PERCEPTRON!
+
+FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
+E`(wrt nodek in hidden layer)=-(desired_output_k-current_output_k)*f`(sum_of_weights_with_hiddennode_values)
+
+FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
+E`(wrt nodej in input layer)=sum(-error_in_hidden_layer*weight_of_kj*f`(sum_of_weights_with_hiddennode_values)*inputnodei)
+
+*/
 float ***weights[];
 float **data;
 float LR;
 int Number_neurons[3]={13,-1,3};
 int currtime=0;
+float **errorhidden;
+float **errorinput;
 srand((unsigned int)time(NULL));
 /*struct node
 {
@@ -46,5 +58,4 @@ float summation(int index,int layer)
 }
 void update_weight(int layer,int index)
 {
-	w
 }
