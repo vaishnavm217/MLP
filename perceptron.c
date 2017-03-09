@@ -41,6 +41,7 @@ void loaddata(char *a,char *b)
 		data[i][0]=1;
 		i++;
 	}
+	fclose(train);
 	test=fopen(b,"r");
 	i=0;
 	testdata=new float*[60];
@@ -51,6 +52,7 @@ void loaddata(char *a,char *b)
 		testdata[i][0]=1;
 		i++;
 	}
+	fclose(testdata);
 }
 void init(int n)
 {
@@ -128,8 +130,12 @@ void run_model()
 	}
 	printf("\n");
 	
-}
+}/*
 void backpropogation()
+{
+	
+}*/
+int main()
 {
 	
 }
