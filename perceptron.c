@@ -27,7 +27,18 @@ int currtime=0;
 float **errorhidden;
 float **errorinput;
 float output[3];
-srand((unsigned int)time(NULL));
+float sigmoidfun(float x)
+{
+	return pow(1+exp(-1*x),-1);
+}
+float derivativefun(float x)
+{
+	return (float)sigmoidfun(x)*(1-sigmoidfun(x));
+}
+float randomweights()
+{
+	return ((float)rand()/(float)(RAND_MAX));
+}
 void loaddata(char *a,char *b)
 {
 	train=fopen(a,"r");
@@ -52,7 +63,7 @@ void loaddata(char *a,char *b)
 		testdata[i][0]=1;
 		i++;
 	}
-	fclose(testdata);
+	fclose(test);
 }
 void init(int n)
 {
@@ -64,7 +75,7 @@ void init(int n)
 		if(i)
 		{
 			weights[i]=new float*[Number_neurons[1]+1];
-			for(j=0;j<Number_neuron[1]+1;j++)
+			for(j=0;j<Number_neurons[1]+1;j++)
 			{
 				weights[i][j]=new float[Number_neurons[0]+1];
 				for(k=0;k<Number_neurons[0]+1;k++)
@@ -75,8 +86,8 @@ void init(int n)
 		}
 		else
 		{
-			weights[i]=new float*[Number_neuron[2]+1];
-			for(j=0;j<Number_neuron[2]+1;j++)
+			weights[i]=new float*[Number_neurons[2]+1];
+			for(j=0;j<Number_neurons[2]+1;j++)
 			{
 				weights[i][j]=new float[Number_neurons[1]+1];
 				for(k=0;k<Number_neurons[1]+1;k++)
@@ -89,32 +100,21 @@ void init(int n)
 	}
 	
 }
-float sigmoidfun(float x)
-{
-	return pow(1+exp(-1*x),-1);
-}
-float derivativefun(float x)
-{
-	return (float)sigmoidfun2(x)*(1-sigmoidfun2(x));
-}
-float randomweights()
-{
-	return ((float)rand()/(float)(RAND_MAX))*(sqrt(6/(Number_neurons[layer]+Number_neurons[layer-1])));
-}
 void run_model()
 {
 	int i=0,j=0,k=0,datavar=0;float sum;
-	hiddendata=new int[Number_neuron[1]+1];
+	hiddendata=new float[Number_neurons[1]+1];
 	/* Calculation of value in hidden layer */
-	for(i=0;i<Number_neuron[1]+1;i++)
+	for(i=1;i<Number_neurons[1]+1;i++)
 	{
 		sum=0.0;
 		for(k=0;k<14;k++)
 		{
-			sum+=weight[0][i][k]*data[datavar][k];
+			sum+=weights[0][i][k]*data[datavar][k];
 		}
 		hiddendata[i]=sigmoidfun(sum);
 	}
+	hiddendata[0]=1;//bias
 	/*Calculate the 1st output*/
 	printf("Values for input %d 1st epoch\n",datavar+1);
 	for(i=0;i<3;i++)
@@ -122,7 +122,7 @@ void run_model()
 		sum=0.0;
 		for(k=0;k<Number_neurons[1]+1;k++)
 		{
-			sum+=weight[0][i][k]*hiddendata[k];
+			sum+=weights[0][i][k]*hiddendata[k];
 		}
 		output[i]=sigmoidfun(sum);
 		printf("%f ",output[i]);
@@ -137,5 +137,10 @@ void backpropogation()
 }*/
 int main()
 {
-	
+	srand((unsigned int)time(NULL));
+	char t1[25]="test.csv";
+	char t2[25]="train.csv";
+	loaddata(t1,t2);
+	init(20);
+	run_model();
 }
