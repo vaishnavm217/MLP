@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<math.h>
-#include <stdlib.h>
-#include <time.h>
+#include<stdlib.h>
+#include<time.h>
 /*
 MULTILAYER PERCEPTRON!
 
@@ -24,8 +24,8 @@ float *hiddendata;
 float **testdata;
 int Number_neurons[3]={13,-1,3};
 int currtime=0;
-float **errorhidden;
-float **errorinput;
+float *errorhidden;
+float *errorinput;
 float output[3];
 float sigmoidfun(float x)
 {
@@ -39,28 +39,31 @@ float randomweights()
 {
 	return ((float)rand()/(float)(RAND_MAX));
 }
-void loaddata(char *a,char *b)
+void loaddata()
 {
-	train=fopen(a,"r");
+	train=fopen("train.csv","r");
 	int i=0;
-	data=new float*[118];
+	data=new float*[119];
 	for(;i<118;i++)
 		data[i]=new float[15];
 	i=0;
-	while(fscanf(train,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",data[i][1],data[i][2],data[i][4],data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],data[i][11],data[i][13],data[i][14]))
+	while(fscanf(train,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",&data[i][1],&data[i][2],&data[i][3],&data[i][4],&data[i][5],&data[i][6],&data[i][7],&data[i][8],&data[i][9],&data[i][10],&data[i][11],&data[i][12],&data[i][13],&data[i][14])!=EOF)
 	{
-		data[i][0]=1;
+		//printf("%d\n",i);
+		data[i][0]=1.0;
 		i++;
 	}
 	fclose(train);
-	test=fopen(b,"r");
+	test=fopen("test.csv","r");
 	i=0;
-	testdata=new float*[60];
+	testdata=new float*[61];
 	for(;i<118;i++)
 		testdata[i]=new float[15];
-	while(fscanf(test,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",testdata[i][1],testdata[i][2],testdata[i][4],testdata[i][5],testdata[i][6],testdata[i][7],testdata[i][8],testdata[i][9],testdata[i][10],testdata[i][11],testdata[i][13],testdata[i][14]))
+	i=0;
+	while(fscanf(test,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",&testdata[i][1],&testdata[i][2],&testdata[i][3],&testdata[i][4],&testdata[i][5],&testdata[i][6],&testdata[i][7],&testdata[i][8],&testdata[i][9],&testdata[i][10],&testdata[i][11],&testdata[i][12],&testdata[i][13],&testdata[i][14])!=EOF)
 	{
-		testdata[i][0]=1;
+		//printf("%d\n",i);
+		testdata[i][0]=1.0;
 		i++;
 	}
 	fclose(test);
@@ -72,7 +75,7 @@ void init(int n)
 	int i=0,j=0,k=0;
 	for(;i<2;i++)
 	{
-		if(i)
+		if(!i)
 		{
 			weights[i]=new float*[Number_neurons[1]+1];
 			for(j=0;j<Number_neurons[1]+1;j++)
@@ -102,6 +105,8 @@ void init(int n)
 }
 void run_model()
 {
+	int *netout;
+	
 	int i=0,j=0,k=0,datavar=0;float sum;
 	hiddendata=new float[Number_neurons[1]+1];
 	/* Calculation of value in hidden layer */
@@ -129,6 +134,11 @@ void run_model()
 		
 	}
 	printf("\n");
+	/*
+		hardcoding first backpropogation
+	*/
+	float exp1,exp2,exp3;
+	if()
 	
 }/*
 void backpropogation()
@@ -138,9 +148,7 @@ void backpropogation()
 int main()
 {
 	srand((unsigned int)time(NULL));
-	char t1[25]="test.csv";
-	char t2[25]="train.csv";
-	loaddata(t1,t2);
+	loaddata();
 	init(20);
 	run_model();
 }
