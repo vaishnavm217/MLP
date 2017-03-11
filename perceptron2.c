@@ -84,6 +84,7 @@ void init(int n)
 				for(k=0;k<Number_neurons[1];k++)
 				{
 					weights[i][j][k]=randomweights();
+					printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
 				}
 			}
 		}
@@ -96,6 +97,7 @@ void init(int n)
 				for(k=0;k<Number_neurons[2];k++)
 				{
 					weights[i][j][k]=randomweights();
+					printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
 				}
 			}
 		}
@@ -109,8 +111,16 @@ void run_model()
 	
 	int i=0,j=0,k=0,datavar=0;float sum;
 	hiddendata=new float[Number_neurons[1]+1];
+		float *netk=new float[3];
+			float *exp=new float[3];
 	/* Calculation of value in hidden layer */
 	float *netj=new float[Number_neurons[1]];
+	label1:
+	for(i=0;i<15;i++)
+	{
+		printf("%f ",data[datavar][i]);
+	}
+		printf("\n");
 	for(i=0;i<Number_neurons[1];i++)
 	{
 		sum=0.0;
@@ -124,7 +134,6 @@ void run_model()
 	hiddendata[0]=1;//bias
 	/*Calculate the 1st output*/
 	printf("Values for input %d 1st epoch\n",datavar+1);
-	float *netk=new float[3];
 	for(i=0;i<3;i++)
 	{
 		sum=0.0;
@@ -141,7 +150,7 @@ void run_model()
 	/*
 		hardcoding first backpropogation
 	*/
-	float *exp=new float[3];
+
 	switch((int)data[datavar][14])
 	{
 		case 1:
@@ -163,21 +172,17 @@ void run_model()
 	float *dk=new float[3];
 printf("Weights between output layer and hidden layer:\n");
 	int step=0;
-	while(step<100000)
+while(step<20000)
 	{
-		step++;
 		for(i=0;i<3;i++)
 		{
 			dk[i]=(exp[i]-output[i])*derivativefun(netk[i]);		
 			for(j=0;j<Number_neurons[1]+1;j++)
 			{
-				//printf("Previous weight: %f ",weights[1][j][i]);
-				weights[1][j][i]-=0.1*-1*dk[i]*hiddendata[j];
-				//printf("new weight: %f\n",weights[1][j][i]);
+				weights[1][j][i]-=0.01*-1*dk[i]*hiddendata[j];
 			}	
 		}
 		/* between hidden layer and input*/
-		//printf("Weights between hidden layer and input layer:\n");
 		for(i=0;i<Number_neurons[0]+1;i++)
 		{
 			for(j=0;j<Number_neurons[1];j++)
@@ -187,9 +192,7 @@ printf("Weights between output layer and hidden layer:\n");
 				{
 					sum+=-1*dk[k]*weights[1][j][k]*derivativefun(netj[j]);
 				}
-				//printf("Previous weight: %f ",weights[0][i][j]);
-				weights[0][i][j]-=-1*0.1*sum*data[datavar][i];
-				//printf("new weight: %f\n",weights[0][i][j]);
+				weights[0][i][j]-=0.01*sum*data[datavar][i];
 			}	
 		}
 		/* After first backpropogation*/
@@ -213,10 +216,10 @@ printf("Weights between output layer and hidden layer:\n");
 			}
 			netk[i]=sum;
 			output[i]=sigmoidfun(sum);
-			printf("%f ",output[i]);
+			//printf("%f ",output[i]);
 		
 		}
-		printf("\n");
+		//printf("\n");
 		switch((int)data[datavar][14])
 		{
 			case 1:
@@ -229,12 +232,64 @@ printf("Weights between output layer and hidden layer:\n");
 				exp[1]=1.0;
 				exp[2]=0.0;
 				break;
-			case 3:	exp[0]=0.0;
+			case 3:
+				exp[0]=0.0;
 				exp[1]=0.0;
 				exp[2]=1.0;
 		}
 		//printf("\n\n\n");
+		datavar++;
+			if(datavar>117)
+			{		step++;
+			datavar=datavar%117;}
 	}
+	//printf("%f %f %f\n",output[0],output[1],output[2]);
+	printf("Done!\n");
+	/*for(i=0;i<Number_neurons[0]+1;i++)
+	{
+		for(j=0;j<Number_neurons[1];j++)
+		{
+								printf("%d %d %d %f\n",0,i,j,weights[0][i][j]);
+		}
+	}
+	for(i=0;i<Number_neurons[1]+1;i++)
+	{
+		for(j=0;j<Number_neurons[2];j++)
+		{
+								printf("%d %d %d %f\n",1,i,j,weights[1][i][j]);
+		}
+	}*/
+	while(1){
+	scanf("%d",&datavar);
+	for(i=0;i<Number_neurons[1];i++)
+		{
+			sum=0.0;
+			for(k=0;k<14;k++)
+			{
+				sum+=weights[0][k][i]*data[datavar][k];
+			}
+			netj[i]=sum;
+			hiddendata[i+1]=sigmoidfun(sum);
+		}
+	//	printf("Values for input backpropogation\n");
+		for(i=0;i<3;i++)
+		{
+			sum=0.0;
+			for(k=0;k<Number_neurons[1]+1;k++)
+			{
+				sum+=weights[1][k][i]*hiddendata[k];
+			}
+			netk[i]=sum;
+			output[i]=sigmoidfun(sum);
+			printf("%f ",output[i]);
+		
+		}
+		}
+		
+
+	
+	//if(datavar<3)
+		//goto label1;
 	
 }/*
 void backpropogation()
