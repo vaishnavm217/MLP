@@ -4,13 +4,10 @@
 #include<time.h>
 /*
 MULTILAYER PERCEPTRON!
-
 FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
 E`(wrt node k in hidden layer)=-(desired_output_k-current_output_k)*f`(sum_of_weights_with_hiddennode_values)
-
 FORMULA TO BE USED IN ERROR BETWEEN HIDDEN NODE AND OUTPUT LAYER:
 E`(wrt node j in input layer)=sum(-error_in_hidden_layer*weight_of_kj*f`(sum_of_weights_with_hidden_node_values)*input_node_i)
-
 3D weight matrix
 1st Dimension - Layer
 2nd & 3rd Dimension - locating the weight
@@ -23,21 +20,20 @@ float **data;
 float *hiddendata;
 float **testdata;
 int Number_neurons[3]={13,-1,3};
-int currtime=0;
 float *errorhidden;
 float *errorinput;
 float output[3];
 float sigmoidfun(float x)
 {
-	return pow(1+exp(-1*x),-1);
+	return (float)((1.0)/(1+exp(-1*x)));
 }
 float derivativefun(float x)
 {
-	return (float)sigmoidfun(x)*(1-sigmoidfun(x));
+	return (float)(sigmoidfun(x)*(1-sigmoidfun(x)));
 }
 float randomweights()
 {
-	return ((float)rand()/(float)(RAND_MAX));
+	return (float)-1*((rand()%30)/800.0);
 }
 void loaddata()
 {
@@ -169,32 +165,68 @@ void run_model()
 			exp[2]=1.0;
 	}
 	/* hidden layer and output layer updation*/
-	float *dk=new float[3];
+	
 printf("Weights between output layer and hidden layer:\n");
 	int step=0;
-while(step<20000)
+	
+while(step<10000)
 	{
+	   float *dk=new float[3];
+	   float *dj=new float[Number_neurons[1]];
+		
 		for(i=0;i<3;i++)
 		{
 			dk[i]=(exp[i]-output[i])*derivativefun(netk[i]);		
-			for(j=0;j<Number_neurons[1]+1;j++)
-			{
-				weights[1][j][i]-=0.01*-1*dk[i]*hiddendata[j];
-			}	
+			//for(j=0;j<Number_neurons[1]+1;j++)
+			//{
+				//weights[1][j][i]-=0.01*-1*dk[i]*hiddendata[j];
+			//}	
 		}
+		
 		/* between hidden layer and input*/
-		for(i=0;i<Number_neurons[0]+1;i++)
-		{
+		
 			for(j=0;j<Number_neurons[1];j++)
 			{
 				sum=0.0;
 				for(k=0;k<Number_neurons[2];k++)
 				{
-					sum+=-1*dk[k]*weights[1][j][k]*derivativefun(netj[j]);
+					sum+=dk[k]*weights[1][j][k]*derivativefun(netj[j]);
 				}
-				weights[0][i][j]-=0.01*sum*data[datavar][i];
+				//weights[0][i][j]-=0.01*sum*data[datavar][i];
+				dj[j]=sum;
 			}	
+		
+		
+		for(i=0;i<Number_neurons[0]+1;i++)
+		{
+				for(j=0;j<Number_neurons[1];j++)
+				{
+					weights[0][i][j]-=0.01*dj[j]*data[datavar][i];
+				}
 		}
+		
+		for(i=0;i<Number_neurons[1]+1;i++)
+		{
+				for(j=0;j<Number_neurons[2];j++)
+				{
+					weights[1][i][j]-=0.01*dk[j]*hiddendata[i];
+				}
+		}
+		
+		
+		
+		
+		
+		datavar++;
+		if(datavar>117)
+			{		step++;
+			datavar=datavar%117;
+			for(i=1;i<Number_neurons[1]+1;i++)
+			{
+				printf("%d %f\n",i,hiddendata[i]);
+			}
+			}
+		
 		/* After first backpropogation*/
 		for(i=0;i<Number_neurons[1];i++)
 		{
@@ -238,10 +270,8 @@ while(step<20000)
 				exp[2]=1.0;
 		}
 		//printf("\n\n\n");
-		datavar++;
-			if(datavar>117)
-			{		step++;
-			datavar=datavar%117;}
+		//datavar++;
+			
 	}
 	//printf("%f %f %f\n",output[0],output[1],output[2]);
 	printf("Done!\n");
@@ -300,6 +330,8 @@ int main()
 {
 	srand((unsigned int)time(NULL));
 	loaddata();
-	init(20);
+	init(10);
 	run_model();
 }
+
+
