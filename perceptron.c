@@ -24,6 +24,10 @@ int Number_neurons[3]={13,-1,3};
 float *errorhidden;
 float *errorinput;
 float output[3];
+float acc[10];
+float ep[10];
+float no[10];
+int count;
 float sigmoidfun(float x)
 {
 	return (float)((1.0)/(1+exp(-1*x)));
@@ -433,7 +437,9 @@ do
 		datavar++;
 		}
         printf("%f %% accurate on test data\n",(cor/60.0)*100);
-
+        ep[count]=step;
+        acc[count]=(cor/60.0)*100;
+        no[count]=Number_neurons[1];
 
 	//if(datavar<3)
 		//goto label1;
@@ -449,11 +455,17 @@ int main()
 	srand((unsigned int)time(NULL));
 	loaddata();
 	int j=10;
+	count=0;
     for(;j<21;j++)
 	{
     printf("Number of Nodes: %d\n",j);
     init(j);
 	run_model();
+    count++;
 	}
+	for(j=0;j<count;j++)
+    {
+        printf("%f,%f,%f\n",ep[j],no[j],acc[j]);
+    }
 	return 0;
 }
