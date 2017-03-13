@@ -13,7 +13,7 @@ E`(wrt node j in input layer)=sum(-error_in_hidden_layer*weight_of_kj*f`(sum_of_
 2nd & 3rd Dimension - locating the weight
 */
 FILE *train,*test;
-float maxtest,maxtrain,mintest,mintrain;
+float *maxtest,*maxtrain,*mintest,*mintrain;
 float **prevhiddenweights;
 float **previnputweights;
 float ***weights;
@@ -38,7 +38,7 @@ float randomweights()
 }
 void loaddata()
 {
-	train=fopen("train.csv","r");
+	train=fopen("Wine data/train.csv","r");
 	int i=0,j=0;
 	data=new float*[119];
 	for(;i<118;i++)
@@ -48,10 +48,11 @@ void loaddata()
 	{
 		//printf("%d\n",i);
 		data[i][0]=1.0;
+		//printf("%f\n",data[i][14]);
 		i++;
 	}
 	fclose(train);
-	test=fopen("test.csv","r");
+	test=fopen("Wine data/test.csv","r");
 	i=0;
 	testdata=new float*[61];
 	for(;i<118;i++)
@@ -63,44 +64,42 @@ void loaddata()
 		testdata[i][0]=1.0;
 		i++;
 	}
+	//getchar();
 	fclose(test);
-	maxtest=mintest=data[0][0];
-	maxtest=mintest=testdata[0][0];
-	for(i=0;i<118;i++)
-	{
-		for(j=1;j<14;j++)
-		{
-		    if(maxtrain<data[i][j])
-			maxtrain=data[i][j];
-		    if(mintrain>data[i][j])
-			mintrain=data[i][j];
-		    if(i<60)
-		    {
-		    if(maxtest<testdata[i][j])
-			maxtest=testdata[i][j];
-		    if(mintest>testdata[i][j])
-			mintest=testdata[i][j];
-		    }
-		}
+	mintest=new float[13];
+	mintrain=new float[13];
+	maxtest=new float[13];
+	maxtrain=new float[13];
+	for(j=1;j<14;j++)
+    {
+        maxtrain[j-1]=mintrain[j-1]=data[0][j];
+        maxtest[j-1]=mintest[j-1]=testdata[0][j];
+
+                for(i=0;i<118;i++)
+                {
+                        if(maxtrain[j-1]<data[i][j])
+                        maxtrain[j-1]=data[i][j];
+                        if(mintrain[j-1]>data[i][j])
+                        mintrain[j-1]=data[i][j];
+                        if(i<60)
+                        {
+                            if(maxtest[j-1]<testdata[i][j])
+                            maxtest[j-1]=testdata[i][j];
+                            if(mintest[j-1]>testdata[i][j])
+                            mintest[j-1]=testdata[i][j];
+                        }
+                }
+
 	}
     for(i=0;i<118;i++)
     {
-        for(j=1;j<14;j++)
+        for(j=0;j<13;j++)
         {
-            data[i][j]=(float)(data[i][j]-mintrain)/(float)(maxtrain-mintrain);
-            /*delete these 2 lines if code doesn't work properly*/
-            data[i][j]*=(2+2);
-            data[i][j]-=2;
+            data[i][j+1]=(data[i][j+1]-mintrain[j])/(maxtrain[j]-mintrain[j]);
             if(i<60)
-            {
-                testdata[i][j]=(float)(testdata[i][j]-mintest)/(float)(maxtest-mintest);
-                /*delete these 2 lines if code doesn't work properly*/
-                testdata[i][j]*=(2+2);
-                testdata[i][j]-=2;
-            }
+                testdata[i][j+1]=(testdata[i][j+1]-mintest[j])/(maxtest[j]-mintest[j]);
         }
-        }
-
+    }
 }
 void init(int n)
 {
@@ -118,7 +117,7 @@ void init(int n)
 				for(k=0;k<Number_neurons[1];k++)
 				{
 					weights[i][j][k]=randomweights();
-					printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
+				//	printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
 				}
 			}
 		}
@@ -131,7 +130,7 @@ void init(int n)
 				for(k=0;k<Number_neurons[2];k++)
 				{
 					weights[i][j][k]=randomweights();
-					printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
+			//		printf("%d %d %d %f\n",i,j,k,weights[i][j][k]);
 				}
 			}
 		}
@@ -141,8 +140,6 @@ void init(int n)
 }
 void run_model()
 {
-	int *netout;
-
 	int i=0,j=0,k=0,datavar=0;float sum;
 	hiddendata=new float[Number_neurons[1]+1];
 		float *netk=new float[3];
@@ -167,7 +164,7 @@ void run_model()
 	}
 	hiddendata[0]=1;//bias
 	/*Calculate the 1st output*/
-	printf("Values for input %d 1st epoch\n",datavar+1);
+	//printf("Values for input %d 1st epoch\n",datavar+1);
 	for(i=0;i<3;i++)
 	{
 		sum=0.0;
@@ -177,7 +174,7 @@ void run_model()
 		}
 		netk[i]=sum;
 		output[i]=sigmoidfun(sum);
-		printf("%f ",output[i]);
+		//printf("%f ",output[i]);
 
 	}
 	printf("\n");
@@ -204,7 +201,7 @@ void run_model()
 	}
 	/* hidden layer and output layer updation*/
 
-printf("Weights between output layer and hidden layer:\n");
+//printf("Weights between output layer and hidden layer:\n");
 	int step=0;
 float error=0;
 float *dk=new float[3];
@@ -241,7 +238,7 @@ do
 		{
 				for(j=0;j<Number_neurons[1];j++)
 				{
-					weights[0][i][j]-=0.01*dj[j]*data[datavar][i];
+					weights[0][i][j]+=0.1*dj[j]*data[datavar][i];
 				}
 		}
 
@@ -249,7 +246,7 @@ do
 		{
 				for(j=0;j<Number_neurons[2];j++)
 				{
-					weights[1][i][j]-=0.01*dk[j]*hiddendata[i];
+					weights[1][i][j]+=0.1*dk[j]*hiddendata[i];
 				}
 		}
 
@@ -261,6 +258,7 @@ do
 		if(datavar>117)
 			{		step++;
 			datavar=datavar%117;
+			//printf("%f\n",error);
 			if(error<0.01)
             break;
 			error=0;
@@ -297,6 +295,10 @@ do
 		//printf("\n");
 		switch((int)data[datavar][14])
 		{
+        case 0:
+                printf("WTF!?");
+                getchar();
+                break;
 			case 1:
 				exp[0]=1.0;
 				exp[1]=0.0;
@@ -317,7 +319,7 @@ do
 
 	}while(1);
 	//printf("%f %f %f\n",output[0],output[1],output[2]);
-	printf("Done!\n");
+	printf("Done! epochs:%d\n",step);
 	/*for(i=0;i<Number_neurons[0]+1;i++)
 	{
 		for(j=0;j<Number_neurons[1];j++)
@@ -332,8 +334,10 @@ do
 								printf("%d %d %d %f\n",1,i,j,weights[1][i][j]);
 		}
 	}*/
-	while(1){
-	scanf("%d",&datavar);
+	datavar=0;
+	float cor=0.0;
+	while(datavar<118){
+	//scanf("%d",&datavar);
 	for(i=0;i<Number_neurons[1];i++)
 		{
 			sum=0.0;
@@ -354,16 +358,87 @@ do
 			}
 			netk[i]=sum;
 			output[i]=sigmoidfun(sum);
-			printf("%f ",output[i]);
+			//printf("%f ",output[i]);
 
 		}
-		}
+		float cl=-1;
+		if(output[0]>output[1] && output[0]>output[2])
+        {
+            cl=1.0;
+        }
+        if(output[1]>output[0] && output[1]>output[2])
+        {
+            cl=2.0;
+        }
+        if(output[2]>output[0] && output[2]>output[1])
+        {
+            cl=3.0;
+        }
 
+        if(cl==data[datavar][14])
+            cor++;
+         else
+        {
+            printf("Entry: %d output: %d actual class: %d\n",datavar+1,cl,data[datavar][14]);
+        }
+		datavar++;
+		}
+		printf("%f %% accurate on train data\n",(cor/118.0)*100);
+        datavar=0;
+	cor=0.0;
+	while(datavar<60){
+	//scanf("%d",&datavar);
+	for(i=0;i<Number_neurons[1];i++)
+		{
+			sum=0.0;
+			for(k=0;k<14;k++)
+			{
+				sum+=weights[0][k][i]*testdata[datavar][k];
+			}
+			netj[i]=sum;
+			hiddendata[i+1]=sigmoidfun(sum);
+		}
+	//	printf("Values for input backpropogation\n");
+		for(i=0;i<3;i++)
+		{
+			sum=0.0;
+			for(k=0;k<Number_neurons[1]+1;k++)
+			{
+				sum+=weights[1][k][i]*hiddendata[k];
+			}
+			netk[i]=sum;
+			output[i]=sigmoidfun(sum);
+			//printf("%f ",output[i]);
+
+		}
+        float cl=-1;
+		if(output[0]>output[1] && output[0]>output[2])
+        {
+            cl=1.0;
+        }
+        if(output[1]>output[0] && output[1]>output[2])
+        {
+            cl=2.0;
+        }
+        if(output[2]>output[0] && output[2]>output[1])
+        {
+            cl=3.0;
+        }
+        if(cl==testdata[datavar][14])
+            cor++;
+        else
+        {
+            printf("Entry: %d output: %f actual class: %f\n",datavar+1,cl,testdata[datavar][14]);
+        }
+		datavar++;
+		}
+        printf("%f %% accurate on test data\n",(cor/60.0)*100);
 
 
 	//if(datavar<3)
 		//goto label1;
-
+/*for(i=0;i<Number_neurons[1]+1;i++)
+    delete hiddendata;*/
 }/*
 void backpropogation()
 {
@@ -373,6 +448,12 @@ int main()
 {
 	srand((unsigned int)time(NULL));
 	loaddata();
-	init(20);
+	int j=10;
+    for(;j<21;j++)
+	{
+    printf("Number of Nodes: %d\n",j);
+    init(j);
 	run_model();
+	}
+	return 0;
 }
