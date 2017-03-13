@@ -13,6 +13,7 @@ E`(wrt node j in input layer)=sum(-error_in_hidden_layer*weight_of_kj*f`(sum_of_
 2nd & 3rd Dimension - locating the weight
 */
 FILE *train,*test;
+float maxtest,maxtrain,mintest,mintrain;
 float **prevhiddenweights;
 float **previnputweights;
 float ***weights;
@@ -37,8 +38,8 @@ float randomweights()
 }
 void loaddata()
 {
-	train=fopen("Wine data/train.csv","r");
-	int i=0;
+	train=fopen("train.csv","r");
+	int i=0,j=0;
 	data=new float*[119];
 	for(;i<118;i++)
 		data[i]=new float[15];
@@ -50,7 +51,7 @@ void loaddata()
 		i++;
 	}
 	fclose(train);
-	test=fopen("Wine data/test.csv","r");
+	test=fopen("test.csv","r");
 	i=0;
 	testdata=new float*[61];
 	for(;i<118;i++)
@@ -98,6 +99,7 @@ void loaddata()
                 testdata[i][j]-=2;
             }
         }
+        }
 
 }
 void init(int n)
@@ -133,14 +135,14 @@ void init(int n)
 				}
 			}
 		}
-		
+
 	}
-	
+
 }
 void run_model()
 {
 	int *netout;
-	
+
 	int i=0,j=0,k=0,datavar=0;float sum;
 	hiddendata=new float[Number_neurons[1]+1];
 		float *netk=new float[3];
@@ -176,7 +178,7 @@ void run_model()
 		netk[i]=sum;
 		output[i]=sigmoidfun(sum);
 		printf("%f ",output[i]);
-		
+
 	}
 	printf("\n");
 	/*
@@ -195,32 +197,32 @@ void run_model()
 			exp[1]=1.0;
 			exp[2]=0.0;
 			break;
-		case 3:	
+		case 3:
 			exp[0]=0.0;
 			exp[1]=0.0;
 			exp[2]=1.0;
 	}
 	/* hidden layer and output layer updation*/
-	
+
 printf("Weights between output layer and hidden layer:\n");
 	int step=0;
-	
+
 while(step<10000)
 	{
 	   float *dk=new float[3];
 	   float *dj=new float[Number_neurons[1]];
-		
+
 		for(i=0;i<3;i++)
 		{
-			dk[i]=(exp[i]-output[i])*derivativefun(netk[i]);		
+			dk[i]=(exp[i]-output[i])*derivativefun(netk[i]);
 			//for(j=0;j<Number_neurons[1]+1;j++)
 			//{
 				//weights[1][j][i]-=0.01*-1*dk[i]*hiddendata[j];
-			//}	
+			//}
 		}
-		
+
 		/* between hidden layer and input*/
-		
+
 			for(j=0;j<Number_neurons[1];j++)
 			{
 				sum=0.0;
@@ -230,9 +232,9 @@ while(step<10000)
 				}
 				//weights[0][i][j]-=0.01*sum*data[datavar][i];
 				dj[j]=sum;
-			}	
-		
-		
+			}
+
+
 		for(i=0;i<Number_neurons[0]+1;i++)
 		{
 				for(j=0;j<Number_neurons[1];j++)
@@ -240,7 +242,7 @@ while(step<10000)
 					weights[0][i][j]-=0.01*dj[j]*data[datavar][i];
 				}
 		}
-		
+
 		for(i=0;i<Number_neurons[1]+1;i++)
 		{
 				for(j=0;j<Number_neurons[2];j++)
@@ -248,11 +250,11 @@ while(step<10000)
 					weights[1][i][j]-=0.01*dk[j]*hiddendata[i];
 				}
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 		datavar++;
 		if(datavar>117)
 			{		step++;
@@ -262,7 +264,7 @@ while(step<10000)
 				printf("%d %f\n",i,hiddendata[i]);
 			}
 			}
-		
+
 		/* After first backpropogation*/
 		for(i=0;i<Number_neurons[1];i++)
 		{
@@ -285,7 +287,7 @@ while(step<10000)
 			netk[i]=sum;
 			output[i]=sigmoidfun(sum);
 			//printf("%f ",output[i]);
-		
+
 		}
 		//printf("\n");
 		switch((int)data[datavar][14])
@@ -307,7 +309,7 @@ while(step<10000)
 		}
 		//printf("\n\n\n");
 		//datavar++;
-			
+
 	}
 	//printf("%f %f %f\n",output[0],output[1],output[2]);
 	printf("Done!\n");
@@ -348,19 +350,19 @@ while(step<10000)
 			netk[i]=sum;
 			output[i]=sigmoidfun(sum);
 			printf("%f ",output[i]);
-		
-		}
-		}
-		
 
-	
+		}
+		}
+
+
+
 	//if(datavar<3)
 		//goto label1;
-	
+
 }/*
 void backpropogation()
 {
-	
+
 }*/
 int main()
 {
@@ -369,5 +371,3 @@ int main()
 	init(10);
 	run_model();
 }
-
-
