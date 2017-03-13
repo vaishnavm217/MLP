@@ -34,7 +34,7 @@ float derivativefun(float x)
 }
 float randomweights()
 {
-	return (float)-1*((rand()%30)/800.0);
+	return ((float)(rand()) / (float)(RAND_MAX)) * (0.5+0.5) -0.5;
 }
 void loaddata()
 {
@@ -149,12 +149,12 @@ void run_model()
 			float *exp=new float[3];
 	/* Calculation of value in hidden layer */
 	float *netj=new float[Number_neurons[1]];
-	label1:
+	label1:/*
 	for(i=0;i<15;i++)
 	{
 		printf("%f ",data[datavar][i]);
 	}
-		printf("\n");
+		printf("\n");*/
 	for(i=0;i<Number_neurons[1];i++)
 	{
 		sum=0.0;
@@ -206,14 +206,16 @@ void run_model()
 
 printf("Weights between output layer and hidden layer:\n");
 	int step=0;
-
-while(step<10000)
+float error=0;
+float *dk=new float[3];
+float *dj=new float[Number_neurons[1]];
+do
 	{
-	   float *dk=new float[3];
-	   float *dj=new float[Number_neurons[1]];
+
 
 		for(i=0;i<3;i++)
 		{
+            error+=(exp[i]-output[i])*(exp[i]-output[i]);
 			dk[i]=(exp[i]-output[i])*derivativefun(netk[i]);
 			//for(j=0;j<Number_neurons[1]+1;j++)
 			//{
@@ -259,10 +261,13 @@ while(step<10000)
 		if(datavar>117)
 			{		step++;
 			datavar=datavar%117;
-			for(i=1;i<Number_neurons[1]+1;i++)
+			if(error<0.01)
+            break;
+			error=0;
+			/*for(i=1;i<Number_neurons[1]+1;i++)
 			{
 				printf("%d %f\n",i,hiddendata[i]);
-			}
+			}*/
 			}
 
 		/* After first backpropogation*/
@@ -310,7 +315,7 @@ while(step<10000)
 		//printf("\n\n\n");
 		//datavar++;
 
-	}
+	}while(1);
 	//printf("%f %f %f\n",output[0],output[1],output[2]);
 	printf("Done!\n");
 	/*for(i=0;i<Number_neurons[0]+1;i++)
@@ -368,6 +373,6 @@ int main()
 {
 	srand((unsigned int)time(NULL));
 	loaddata();
-	init(10);
+	init(20);
 	run_model();
 }
