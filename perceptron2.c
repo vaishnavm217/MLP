@@ -63,22 +63,22 @@ void loaddata()
 		i++;
 	}
 	fclose(test);
-	maxtest=mintest=data[0][0][0];
-	maxtest=mintest=data[1][0][0];
+	maxtest=mintest=data[0][0];
+	maxtest=mintest=testdata[0][0];
 	for(i=0;i<118;i++)
 	{
 		for(j=1;j<14;j++)
 		{
-		    if(maxtrain<data[0][i][j])
-			maxtrain=data[0][i][j];
-		    if(mintrain>data[0][i][j])
-			mintrain=data[0][i][j];
+		    if(maxtrain<data[i][j])
+			maxtrain=data[i][j];
+		    if(mintrain>data[i][j])
+			mintrain=data[i][j];
 		    if(i<60)
 		    {
-		    if(maxtest<data[1][i][j])
-			maxtest=data[1][i][j];
-		    if(mintest>data[1][i][j])
-			mintest=data[1][i][j];
+		    if(maxtest<testdata[i][j])
+			maxtest=testdata[i][j];
+		    if(mintest>testdata[i][j])
+			mintest=testdata[i][j];
 		    }
 		}
 	}
@@ -86,16 +86,16 @@ void loaddata()
     {
         for(j=1;j<14;j++)
         {
-            data[0][i][j]=(float)(data[0][i][j]-mintrain)/(float)(maxtrain-mintrain);
+            data[i][j]=(float)(data[i][j]-mintrain)/(float)(maxtrain-mintrain);
             /*delete these 2 lines if code doesn't work properly*/
-            data[0][i][j]*=(2+2);
-            data[0][i][j]-=2;
+            data[i][j]*=(2+2);
+            data[i][j]-=2;
             if(i<60)
             {
-                data[1][i][j]=(float)(data[0][i][j]-mintest)/(float)(maxtest-mintest);
+                testdata[i][j]=(float)(testdata[i][j]-mintest)/(float)(maxtest-mintest);
                 /*delete these 2 lines if code doesn't work properly*/
-                data[1][i][j]*=(2+2);
-                data[1][i][j]-=2;
+                testdata[i][j]*=(2+2);
+                testdata[i][j]-=2;
             }
         }
 
